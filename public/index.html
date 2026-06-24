@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hierarchy Insight Engine | Chitkara Challenge</title>
+  <meta name="description" content="An elegant, high-fidelity visualization platform for analyzing node hierarchies, detecting cycles, and parsing relationship trees built for the Chitkara Full Stack Engineering Challenge.">
+  
+  <!-- Custom SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Decorative Glowing Background Spheres -->
+  <div class="bg-glow sphere-1"></div>
+  <div class="bg-glow sphere-2"></div>
+  <div class="bg-glow sphere-3"></div>
+
+  <div class="app-container">
+    <!-- Header Section -->
+    <header class="app-header animate-fade-in">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <h1>Hierarchy Insight Engine</h1>
+      </div>
+      <p class="subtitle">Chitkara Full Stack Engineering Challenge • Node.js + Express</p>
+      
+      <!-- Student Info Badge -->
+      <div class="student-badge glass-panel">
+        <span class="badge-item"><strong>Developer:</strong> Tiya Kukar</span>
+        <span class="badge-divider"></span>
+        <span class="badge-item"><strong>Roll:</strong> 21CS11001</span>
+        <span class="badge-divider"></span>
+        <span class="badge-item"><strong>Email:</strong> tiya.kukar.student@chitkara.edu.in</span>
+      </div>
+    </header>
+
+    <main class="app-content">
+      <!-- Input Panel -->
+      <section class="control-panel glass-panel animate-slide-up" id="input-section">
+        <div class="panel-header">
+          <h2>Relationship Input</h2>
+          <p>Provide directed edges in the format <code>X->Y</code> (one per line, comma-separated, or as a JSON array).</p>
+        </div>
+        
+        <form id="hierarchy-form" class="form-layout">
+          <div class="textarea-wrapper">
+            <textarea 
+              id="node-data-input" 
+              placeholder='["A->B", "A->C", "B->D", "C->E", "E->F", "X->Y", "Y->Z", "Z->X"] or A->B, B->C, C->D'
+              spellcheck="false"
+              required
+            ></textarea>
+            <div class="textarea-glow"></div>
+          </div>
+
+          <div class="action-bar">
+            <div class="preset-buttons">
+              <button type="button" id="btn-load-sample" class="btn-secondary">Load Standard Demo</button>
+              <button type="button" id="btn-load-complex" class="btn-secondary">Load Complex Case</button>
+              <button type="button" id="btn-clear" class="btn-secondary">Clear</button>
+            </div>
+            
+            <button type="submit" id="btn-submit" class="btn-primary">
+              <span class="btn-text">Analyze Hierarchy</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Error Toast/Banner -->
+      <div id="error-banner" class="error-panel glass-panel hidden animate-fade-in">
+        <div class="error-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div class="error-message">
+          <strong id="error-title">Analysis Failed</strong>
+          <p id="error-desc">Please verify your input format and try again.</p>
+        </div>
+      </div>
+
+      <!-- Polished Loader Panel (Hidden by default) -->
+      <div id="analysis-loader" class="glass-panel loader-panel hidden animate-fade-in">
+        <div class="loader-spinner-wrapper">
+          <div class="loader-spinner-ring"></div>
+          <div class="loader-spinner-core"></div>
+        </div>
+        <h3>Analyzing Graph Topology...</h3>
+        <p>Validating syntax, resolving multi-parent nodes, and tracing cyclic groups</p>
+      </div>
+
+      <!-- Empty State Placeholder Panel -->
+      <section id="placeholder-panel" class="glass-panel empty-state-panel animate-fade-in">
+        <div class="empty-state-content">
+          <div class="empty-state-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+            </svg>
+          </div>
+          <h3>Ready for Analysis</h3>
+          <p>Enter relationship edges in the input panel above or load a demo preset, then click <strong>Analyze Hierarchy</strong> to generate interactive tree structures, cycle diagnostics, and performance metrics.</p>
+          <div class="empty-state-hints">
+            <div class="hint-item">
+              <span class="hint-dot" style="background-color: var(--accent-success);"></span>
+              <span>Interactive tree rendering</span>
+            </div>
+            <div class="hint-item">
+              <span class="hint-dot" style="background-color: var(--accent-danger);"></span>
+              <span>Automatic cycle detection</span>
+            </div>
+            <div class="hint-item">
+              <span class="hint-dot" style="background-color: var(--accent-warning);"></span>
+              <span>Duplicate & conflict filtering</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results Panel (Hidden initially) -->
+      <section id="results-panel" class="results-layout hidden">
+        
+        <!-- Summary Stats Grid -->
+        <div class="stats-grid animate-slide-up">
+          <div class="stat-card glass-panel" style="--accent-color: #10B981;">
+            <div class="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Valid Trees</span>
+              <span class="stat-value" id="stat-trees">0</span>
+            </div>
+            <div class="card-glow"></div>
+          </div>
+
+          <div class="stat-card glass-panel" style="--accent-color: #EF4444;">
+            <div class="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 11H20" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Cyclic Groups</span>
+              <span class="stat-value" id="stat-cycles">0</span>
+            </div>
+            <div class="card-glow"></div>
+          </div>
+
+          <div class="stat-card glass-panel" style="--accent-color: #d946ef;">
+            <div class="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Largest Tree Root</span>
+              <span class="stat-value" id="stat-largest-root">-</span>
+            </div>
+            <div class="card-glow"></div>
+          </div>
+        </div>
+
+        <!-- Main Insights Split Panel -->
+        <div class="insights-grid">
+          
+          <!-- Left Column: Visual Tree Render -->
+          <div class="glass-panel main-insight-card animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="panel-header-compact">
+              <h3>Hierarchical Tree Visualizer</h3>
+              <p>Graphical representation of processed relationships</p>
+            </div>
+            <div class="visualizer-body" id="tree-visualizer-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Right Column: Metadata & Raw JSON -->
+          <div class="right-column-grid animate-slide-up" style="animation-delay: 0.2s;">
+            
+            <!-- Edge Tracking Panels -->
+            <div class="glass-panel metadata-card">
+              <div class="panel-header-compact">
+                <h3>Anomaly & Edge Tracking</h3>
+                <p>Validation results and resolved conflicts</p>
+              </div>
+              
+              <div class="metadata-lists">
+                <!-- Duplicate Edges -->
+                <div class="meta-section">
+                  <div class="meta-section-header">
+                    <span class="badge badge-warning" id="badge-duplicates-count">0</span>
+                    <h4>Duplicate Edges</h4>
+                  </div>
+                  <p class="section-desc">Subsequent occurrences ignored for tree building.</p>
+                  <ul class="meta-list" id="duplicate-edges-list">
+                    <!-- Dynamically populated -->
+                  </ul>
+                </div>
+
+                <!-- Invalid Entries -->
+                <div class="meta-section">
+                  <div class="meta-section-header">
+                    <span class="badge badge-danger" id="badge-invalid-count">0</span>
+                    <h4>Invalid Entries</h4>
+                  </div>
+                  <p class="section-desc">Entries failing format rules (e.g. self-loops, malformed syntax).</p>
+                  <ul class="meta-list" id="invalid-entries-list">
+                    <!-- Dynamically populated -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Raw JSON Inspector -->
+            <div class="glass-panel raw-json-card">
+              <div class="panel-header-compact">
+                <div class="json-header-layout">
+                  <h3>Raw API Response</h3>
+                  <button type="button" id="btn-copy-json" class="btn-text-only">Copy JSON</button>
+                </div>
+                <p>Direct response payload from <code>POST /bfhl</code></p>
+              </div>
+              <div class="json-body">
+                <pre><code id="raw-json-output">{}</code></pre>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer animate-fade-in">
+      <p>Built by Tiya Kukar • Full Stack Engineering Challenge</p>
+    </footer>
+  </div>
+
+  <!-- Main JavaScript App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

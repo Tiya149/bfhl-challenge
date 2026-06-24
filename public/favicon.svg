@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </defs>
+  <!-- Connecting lines -->
+  <line x1="16" y1="6" x2="8" y2="18" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" />
+  <line x1="16" y1="6" x2="24" y2="18" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" />
+  <line x1="8" y1="18" x2="8" y2="26" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" />
+  <!-- Nodes -->
+  <circle cx="16" cy="6" r="4" fill="url(#grad)" />
+  <circle cx="8" cy="18" r="4" fill="url(#grad)" />
+  <circle cx="24" cy="18" r="4" fill="url(#grad)" />
+  <circle cx="8" cy="26" r="3" fill="url(#grad)" />
+</svg>
